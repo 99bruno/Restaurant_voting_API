@@ -1,10 +1,11 @@
+from core.views import BaseView
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
 from rest_framework.response import Response
-from .models import Restaurant, Menu
-from .serializers import RestaurantSerializer, MenuSerializer
-from core.views import BaseView
+
+from .models import Menu, Restaurant
+from .serializers import MenuSerializer, RestaurantSerializer
 
 
 class RestaurantView(BaseView):
@@ -17,7 +18,9 @@ class RestaurantView(BaseView):
         :return:
         """
 
-        return self.response_200(RestaurantSerializer(Restaurant.get_all_restaurants(), many=True))
+        return self.response_200(
+            RestaurantSerializer(Restaurant.get_all_restaurants(), many=True)
+        )
 
     def post(self, request) -> Response:
         """
@@ -27,8 +30,10 @@ class RestaurantView(BaseView):
         :return:
         """
         if not request.user.is_admin:
-            return Response({"detail": "You do not have permission to perform this action."},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         return self.validate_serializer(RestaurantSerializer(data=request.data))
 
@@ -51,8 +56,10 @@ class MenuView(BaseView):
             raise NotFound(detail="Restaurant not found.")
 
         if not (user.is_admin or user.id == restaurant.owner_id.id):
-            return Response({"detail": "You do not have permission to perform this action."},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         data = request.data.copy()
         data["restaurant"] = restaurant_id
@@ -71,7 +78,7 @@ class MenuView(BaseView):
         if not menus:
             return Response(
                 {"detail": "No menus found for this restaurant."},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         return self.response_200(MenuSerializer(menus, many=True))

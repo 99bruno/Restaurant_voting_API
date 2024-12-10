@@ -13,13 +13,15 @@ class AppVersionMiddleware:
         :param request:
         :return:
         """
-        app_version = request.headers.get('App-Version', None)
+        app_version = request.headers.get("App-Version", None)
 
         request.app_version = app_version
 
         if app_version and float(app_version) < 1.0:
-            return JsonResponse({'error': 'Unsupported app version. Please update.'},
-                                status=status.HTTP_426_UPGRADE_REQUIRED)
+            return JsonResponse(
+                {"error": "Unsupported app version. Please update."},
+                status=status.HTTP_426_UPGRADE_REQUIRED,
+            )
 
         response = self.get_response(request)
         return response

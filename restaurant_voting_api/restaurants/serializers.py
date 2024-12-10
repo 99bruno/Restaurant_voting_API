@@ -1,17 +1,17 @@
-from .models import Restaurant, Menu, Item
-from django.db import IntegrityError
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
+from .models import Item, Menu, Restaurant
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'owner_id']
+        fields = ["id", "name", "owner_id"]
         extra_kwargs = {
-            'name': {'required': True},
-            'description': {'required': False},
-            'owner_id': {'required': True},
+            "name": {"required": True},
+            "description": {"required": False},
+            "owner_id": {"required": True},
         }
 
     def validate(self, data):
@@ -22,7 +22,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
         :return:
         """
 
-        allowed_keys = {'name', 'owner_id'}
+        allowed_keys = {"name", "owner_id"}
         extra_keys = set(self.initial_data.keys()) - allowed_keys
         if extra_keys:
             raise ValidationError(f"Unexpected fields: {', '.join(extra_keys)}")
@@ -32,7 +32,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['name', 'price', 'description']
+        fields = ["name", "price", "description"]
 
 
 class MenuSerializer(serializers.ModelSerializer):
@@ -40,10 +40,10 @@ class MenuSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ['id', 'date', 'restaurant', 'items']
+        fields = ["id", "date", "restaurant", "items"]
 
     def create(self, validated_data):
-        items_data = validated_data.pop('items')
+        items_data = validated_data.pop("items")
         menu = Menu.objects.create(**validated_data)
         for item_data in items_data:
             Item.objects.create(menu=menu, **item_data)

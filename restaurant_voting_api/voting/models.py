@@ -1,8 +1,8 @@
 from collections import namedtuple
 from datetime import date
 
-from django.db import models
 from core.models import User
+from django.db import models
 from django.db.models import Count, Max
 from restaurants.models import Menu
 
@@ -17,7 +17,8 @@ class Vote(models.Model):
         Metaclass for the Vote model. Defines the unique_together attribute to ensure that a user can only vote once
         for a menu.
         """
-        unique_together = ('user', 'menu')
+
+        unique_together = ("user", "menu")
 
     def __str__(self):
         return f"Vote by {self.user.username} for {self.menu.date}"
@@ -45,14 +46,18 @@ class Vote(models.Model):
         """
 
         # The query retrieves the menu ID, restaurant ID, and vote count for each menu on the specified date.
-        votes = Vote.objects.filter(menu__date=date_menu) \
-            .values('menu', 'menu__date', 'menu__restaurant', 'menu__restaurant__id') \
-            .annotate(vote_count=Count('id')) \
-            .order_by('menu')
+        votes = (
+            Vote.objects.filter(menu__date=date_menu)
+            .values("menu", "menu__date", "menu__restaurant", "menu__restaurant__id")
+            .annotate(vote_count=Count("id"))
+            .order_by("menu")
+        )
 
-        VoteCount = namedtuple('VoteCount', ['menu', 'restaurant_id', 'vote_count'])
-        return [VoteCount(vote['menu'], vote['menu__restaurant__id'], vote['vote_count']) for vote
-                in votes]
+        VoteCount = namedtuple("VoteCount", ["menu", "restaurant_id", "vote_count"])
+        return [
+            VoteCount(vote["menu"], vote["menu__restaurant__id"], vote["vote_count"])
+            for vote in votes
+        ]
 
     @staticmethod
     def get_today_menu() -> models.QuerySet:
@@ -64,17 +69,21 @@ class Vote(models.Model):
         """
 
         # Annotate each menu with its vote count for today
-        votes = Vote.objects.filter(menu__date=date.today()) \
-            .values('menu', 'menu__restaurant') \
-            .annotate(vote_count=Count('id'))
+        votes = (
+            Vote.objects.filter(menu__date=date.today())
+            .values("menu", "menu__restaurant")
+            .annotate(vote_count=Count("id"))
+        )
 
         # Get the maximum vote count for today
-        max_vote_count = votes.aggregate(max_votes=Max('vote_count'))['max_votes']
+        max_vote_count = votes.aggregate(max_votes=Max("vote_count"))["max_votes"]
 
         # Filter menus that have the maximum vote count
         top_votes = votes.filter(vote_count=max_vote_count)
 
         # Get the actual menus based on the top votes
-        menus_with_max_votes = Menu.objects.filter(id__in=[vote['menu'] for vote in top_votes])
+        menus_with_max_votes = Menu.objects.filter(
+            id__in=[vote["menu"] for vote in top_votes]
+        )
 
         return menus_with_max_votes

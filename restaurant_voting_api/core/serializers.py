@@ -1,16 +1,17 @@
-from .models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ["username", "email", "password"]
         extra_kwargs = {
-            'password': {'write_only': True},
-            'email': {'required': True},  # Email обов'язковий
-            'username': {'required': True},  # Ім'я користувача обов'язкове
+            "password": {"write_only": True},
+            "email": {"required": True},  # Email обов'язковий
+            "username": {"required": True},  # Ім'я користувача обов'язкове
         }
 
     @staticmethod
@@ -32,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
         :param data:
         :return:
         """
-        allowed_keys = {'username', 'email', 'password'}
+        allowed_keys = {"username", "email", "password"}
         extra_keys = set(self.initial_data.keys()) - allowed_keys
         if extra_keys:
             raise ValidationError(f"Unexpected fields: {', '.join(extra_keys)}")

@@ -1,14 +1,17 @@
-from django.test import TestCase
-from core.models import User
-from restaurants.models import Restaurant, Menu, Item
 from datetime import date
+
+from core.models import User
+from django.test import TestCase
 from rest_framework.exceptions import ValidationError
+from restaurants.models import Item, Menu, Restaurant
 
 
 class RestaurantModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="password")
-        self.restaurant = Restaurant.objects.create(name="Test Restaurant", owner_id=self.user)
+        self.restaurant = Restaurant.objects.create(
+            name="Test Restaurant", owner_id=self.user
+        )
 
     def test_create_restaurant(self):
         """Test creating a restaurant"""
@@ -17,13 +20,13 @@ class RestaurantModelTest(TestCase):
 
     def test_get_all_restaurants(self):
         """Test getting all restaurants"""
-        restaurant = Restaurant.objects.create(name="Second Restaurant", owner_id=self.user)
+        Restaurant.objects.create(name="Second Restaurant", owner_id=self.user)
         restaurants = Restaurant.get_all_restaurants()
         self.assertEqual(len(restaurants), 2)
 
     def test_get_restaurant_by_owner(self):
         """Test getting restaurants by owner id"""
-        restaurant = Restaurant.objects.create(name="Second Restaurant", owner_id=self.user)
+        Restaurant.objects.create(name="Second Restaurant", owner_id=self.user)
         owner_restaurants = Restaurant.get_restaurant_by_owner_id(self.user.id)
         self.assertEqual(len(owner_restaurants), 2)
 
@@ -31,7 +34,9 @@ class RestaurantModelTest(TestCase):
 class MenuModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="password")
-        self.restaurant = Restaurant.objects.create(name="Test Restaurant", owner_id=self.user)
+        self.restaurant = Restaurant.objects.create(
+            name="Test Restaurant", owner_id=self.user
+        )
         self.menu = Menu.objects.create(restaurant=self.restaurant, date=date.today())
 
     def test_create_menu(self):
@@ -45,12 +50,16 @@ class MenuModelTest(TestCase):
 
     def test_is_vote_allowed_future(self):
         """Test if vote is allowed for a future date"""
-        future_menu = Menu.objects.create(restaurant=self.restaurant, date=date(2024, 12, 31))
+        future_menu = Menu.objects.create(
+            restaurant=self.restaurant, date=date(2024, 12, 31)
+        )
         self.assertTrue(future_menu.is_vote_allowed())
 
     def test_is_vote_not_allowed_past(self):
         """Test if vote is not allowed for a past date"""
-        past_menu = Menu.objects.create(restaurant=self.restaurant, date=date(2023, 12, 31))
+        past_menu = Menu.objects.create(
+            restaurant=self.restaurant, date=date(2023, 12, 31)
+        )
         self.assertFalse(past_menu.is_vote_allowed())
 
     def test_get_menu_by_restaurant(self):
@@ -67,7 +76,9 @@ class MenuModelTest(TestCase):
 class ItemModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="password")
-        self.restaurant = Restaurant.objects.create(name="Test Restaurant", owner_id=self.user)
+        self.restaurant = Restaurant.objects.create(
+            name="Test Restaurant", owner_id=self.user
+        )
         self.menu = Menu.objects.create(restaurant=self.restaurant, date=date.today())
         self.item = Item.objects.create(name="Test Item", menu=self.menu, price=10.99)
 
@@ -91,5 +102,3 @@ class ItemModelTest(TestCase):
     def test_item_str(self):
         """Test string representation of an item"""
         self.assertEqual(str(self.item), "Test Item")
-
-

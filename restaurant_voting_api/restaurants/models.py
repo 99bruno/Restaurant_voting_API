@@ -1,6 +1,7 @@
-from datetime import date as date_datetime, datetime
-from core.models import User
+from datetime import date as date_datetime
+from datetime import datetime
 
+from core.models import User
 from django.db import models
 from rest_framework.exceptions import ValidationError
 
@@ -52,18 +53,22 @@ class Menu(models.Model):
         id (int): The primary key for the menu.
         restaurant (Restaurant): The restaurant to which the menu belongs.
         date (date): The date of the menu.
-        """
+    """
 
     id: models.AutoField(primary_key=True)
     date: date_datetime = models.DateField(default=date_datetime.today)
-    restaurant: Restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, related_name='menus')
+    restaurant: Restaurant = models.ForeignKey(
+        "Restaurant", on_delete=models.CASCADE, related_name="menus"
+    )
 
     def __str__(self) -> str:
-        return str(self.date) + ' - ' + self.restaurant.name
+        return str(self.date) + " - " + self.restaurant.name
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['date', 'restaurant'], name='unique_menu_per_day_per_restaurant')
+            models.UniqueConstraint(
+                fields=["date", "restaurant"], name="unique_menu_per_day_per_restaurant"
+            )
         ]
 
     @staticmethod
@@ -78,7 +83,9 @@ class Menu(models.Model):
         return Menu.objects.filter(restaurant=restaurant_id)
 
     @staticmethod
-    def get_menu_by_date(date_menu: date_datetime = date_datetime.today()) -> models.QuerySet:
+    def get_menu_by_date(
+        date_menu: date_datetime = date_datetime.today(),
+    ) -> models.QuerySet:
         """
         Get the menu for a restaurant by the date. By default, it returns the menu for today.
 
@@ -122,7 +129,9 @@ class Item(models.Model):
 
     id: models.AutoField(primary_key=True)
     name: str = models.CharField(max_length=200)
-    menu: int = models.ForeignKey(Menu, on_delete=models.CASCADE, blank=True, null=True, related_name='items')
+    menu: int = models.ForeignKey(
+        Menu, on_delete=models.CASCADE, blank=True, null=True, related_name="items"
+    )
     description: str = models.TextField(blank=True)
     price: float = models.FloatField()
 
@@ -131,7 +140,7 @@ class Item(models.Model):
         Validates the price to ensure it's not negative.
         """
         if self.price < 0:
-            raise ValidationError('Price cannot be negative.')
+            raise ValidationError("Price cannot be negative.")
 
     def __str__(self) -> str:
         return self.name

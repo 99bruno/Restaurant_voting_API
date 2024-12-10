@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Menu, Item, Restaurant
+
+from .models import Item, Menu, Restaurant
 
 admin.site.register(Menu)
 admin.site.register(Item)

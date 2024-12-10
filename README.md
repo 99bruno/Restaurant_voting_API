@@ -1,6 +1,6 @@
 # Restaurant Voting API
 
-This is a backend API for managing restaurant voting, where users can vote for their favorite menus. 
+This is a backend API for managing restaurant voting, where users can vote for their favorite menus.
 The system provides endpoints to create votes, fetch vote statistics, and view the most popular menu for today.
 
 ## Table of Contents
@@ -31,12 +31,12 @@ The system provides endpoints to create votes, fetch vote statistics, and view t
     ```sh
     sudo apt-get update && sudo apt-get install docker.io docker-compose
     ```
-   
+
 3. Run the Docker container for application:
     ```sh
     docker-compose up --build
     ```
-   
+
 4Access the application at `http://127.0.0.1:8000/`.
 
 

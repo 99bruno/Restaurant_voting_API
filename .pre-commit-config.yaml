@@ -1,31 +1,29 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v5.0.0  # Остання стабільна версія
     hooks:
       - id: trailing-whitespace
-        files: ^restaurant_voting_api/
       - id: end-of-file-fixer
-        files: ^restaurant_voting_api/
       - id: check-yaml
-        files: ^restaurant_voting_api/
       - id: check-json
-        files: ^restaurant_voting_api/
+      - id: check-merge-conflict
 
+repos:
   - repo: https://github.com/psf/black
-    rev: 23.1.0
+    rev: 24.10.0
     hooks:
       - id: black
-        language_version: python3.11
-        files: ^restaurant_voting_api/.*\.py$
+        args: [--quiet]
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.241
+    rev: v0.8.2
     hooks:
       - id: ruff
-        files: ^restaurant_voting_api/.*\.py$
+        args: [--fix]
+        types_or: [python]
 
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.10.1
     hooks:
       - id: isort
-        files: ^restaurant_voting_api/.*\.py$
+        args: [--profile=black]

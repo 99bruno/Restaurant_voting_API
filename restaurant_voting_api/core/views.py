@@ -1,9 +1,10 @@
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .serializers import UserSerializer
-from rest_framework.permissions import IsAuthenticated
 
 
 class BaseView(APIView):
@@ -49,14 +50,19 @@ class BaseView(APIView):
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
 
-            return Response({
-                'username': user.username,
-                'email': user.email,
-                'access_token': access_token,
-                'refresh_token': str(refresh),
-            }, status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    "username": user.username,
+                    "email": user.email,
+                    "access_token": access_token,
+                    "refresh_token": str(refresh),
+                },
+                status=status.HTTP_201_CREATED,
+            )
 
-        return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class UserRegistrationView(BaseView):
@@ -82,8 +88,12 @@ class SuperUserRegistrationView(BaseView):
         :return:
         """
         user = request.user
-        if not hasattr(user, 'is_admin') or not user.is_admin:
-            return Response({"detail": "You do not have permission to perform this action."},
-                            status=status.HTTP_403_FORBIDDEN)
+        if not hasattr(user, "is_admin") or not user.is_admin:
+            return Response(
+                {"detail": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
-        return self.validate_user_creation(UserSerializer(data=request.data), is_admin=True)
+        return self.validate_user_creation(
+            UserSerializer(data=request.data), is_admin=True
+        )

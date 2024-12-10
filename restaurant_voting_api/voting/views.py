@@ -1,12 +1,11 @@
-import datetime
-
+from core.views import BaseView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from restaurants.serializers import MenuSerializer
+
 from .models import Vote
 from .serializers import VoteSerializer, VoteStatisticsSerializer
-from restaurants.serializers import MenuSerializer
-from core.views import BaseView
 
 
 class VoteView(BaseView):
@@ -20,7 +19,7 @@ class VoteView(BaseView):
         :return:
         """
         data = request.data
-        data['user'] = request.user.id
+        data["user"] = request.user.id
         return self.validate_serializer(VoteSerializer(data=data))
 
     def get(self, request: Request):
@@ -31,7 +30,9 @@ class VoteView(BaseView):
         :return:
         """
 
-        return self.response_200(VoteStatisticsSerializer(Vote.get_votes_for_day(), many=True))
+        return self.response_200(
+            VoteStatisticsSerializer(Vote.get_votes_for_day(), many=True)
+        )
 
 
 class VoteDetailView(BaseView):
