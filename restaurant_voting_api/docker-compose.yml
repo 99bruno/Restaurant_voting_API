@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: postgres_restaurant_voting
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - .:/docker-entrypoint-initdb.d
+
+  web:
+    build:
+        context: .
+    container_name: django_api_restaurant_voting
+    volumes:
+      - .:/restaurant_voting_api
+    ports:
+      - "${PORT}:8000"
+    depends_on:
+      - postgres
+    command: python manage.py runserver ${HOST}:${PORT}
+
+volumes:
+  postgres_data:
