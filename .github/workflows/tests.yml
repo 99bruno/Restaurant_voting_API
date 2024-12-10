@@ -45,6 +45,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r restaurant_voting_api/requirements.txt
 
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
       - name: Start services
         run: docker-compose up -d
 
