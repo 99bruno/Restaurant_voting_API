@@ -51,7 +51,7 @@ jobs:
           sudo apt-get install -y docker-compose
 
       - name: Start services
-        run: docker-compose up -d
+        run: docker-compose -f restaurant_voting_api/docker-compose.yml up -d
 
       - name: Run tests
         run: pytest
